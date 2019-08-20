@@ -58,28 +58,22 @@
         {% endif %}
         <script>
             $(document).ready(function() {
-                $(window).keydown(function(event){
-                    if(event.keyCode == 13) {
-                    event.preventDefault();
-                    return false;
-                    }
-                });
-                });
-            $('#stage2').hide()
-            $('#yeeter').click(function() {
-                $('#stage1').show()
                 $('#stage2').hide()
-            })
-            $('#next').click(function() {
-
-                var price = 0
-                $('.quantity').each(function() {
-                    if(this.value < 0 || this.value > 20) {
+                $('#yeeter').click(function() {
+                    $('#stage1').show()
+                    $('#stage2').hide()
+                })
+                $('#next').click(function() {
+                    var price = 0
+                    $('.quantity').each(function() {
+                        if(this.value < 0 || this.value > 20) {
+                            return
+                        }
+                        price += this.value * this.getAttribute('data-price')
+                    })
+                    if(price == 0) {
                         return
                     }
-                    price += this.value * this.getAttribute('data-price')
-                })
-                if(price > 0) {
                     $('#total-price').text(price)
                     fetch('qr.php?price=' + price + '&name=' + document.getElementById("name").value + '')
                         .then(resp => resp.text())
@@ -88,8 +82,15 @@
                         })
                     $('#stage1').hide()
                     $('#stage2').show()
-                }  
-            })
+                
+                })
+                $(window).keydown(function(event){
+                    if(event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                    }
+                });
+            });
         </script>
     </div>
 {% endblock content %}

@@ -1,11 +1,5 @@
 <?php
 
-if(!isset($_SESSION['donken']['username']))
-{
-    header('Location: index.php');
-    die();
-}
-
 $config = (array) json_decode(file_get_contents('priv/config.json'));
 
 if(!isset($config['swish_number']) || $config['swish_number'] == '')
