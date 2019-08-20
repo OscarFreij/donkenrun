@@ -1,0 +1,78 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>Beställning #{{ order.id }}</h1>
+    <p>
+        Kund: {{ order[0].customer }}
+    </p>
+    <p>
+        Betalad: 
+        {% if order.paid %}
+            <span class="badge badge-success">Ja</span>
+            <form action="order.php" method="post">
+                <input type="hidden" name="action" value="update-paid">
+                <input type="hidden" name="paid" value="0">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <button class="btn btn-success" type="submit">Markera inte betalad</button>
+            </form>
+        {% else %}
+            <span class="badge badge-danger">Nej</span>
+            <form action="order.php" method="post">
+                <input type="hidden" name="action" value="update-paid">
+                <input type="hidden" name="paid" value="1">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <button class="btn btn-danger" type="submit">Markera betalad</button>
+            </form>
+        {% endif %}
+    </p>
+    <p>
+       Hämtad:
+        {% if order.delivered %}
+            <span class="badge badge-success">Ja</span>
+            <form action="order.php" method="post">
+                <input type="hidden" name="action" value="update-delivered">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <input type="hidden" name="delivered" value="0">
+                <button class="btn btn-success" type="submit">Markera inte hämtad</button>
+            </form>
+        {% else %}
+            <span class="badge badge-danger">Nej</span>
+            <form action="order.php" method="post">
+                <input type="hidden" name="action" value="update-delivered">
+                <input type="hidden" name="delivered" value="1">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <button class="btn btn-danger" type="submit">Markera hämtad</button>
+            </form>
+        {% endif %}
+        <h5>Kommentar</h5>
+        <p>
+            {{ order.comment }}
+        </p>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produkt</th>
+                <th>Kvantitet</th>
+                <th>Pris</th>
+                <th>Prissumma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.price_sum }} kr</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Totalt:</td>
+                <td>{{ total_price }} kr</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content %}

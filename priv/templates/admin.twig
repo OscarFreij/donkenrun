@@ -1,0 +1,129 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <div class="jumbotron">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="true">Beställningar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="products-tab" data-toggle="tab" href="#products" role="tab" aria-controls="products" aria-selected="false">Produkter</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="create-product-tab" data-toggle="tab" href="#create-product" role="tab" aria-controls="create-product" aria-selected="false">Skapa produkt</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="config-tab" data-toggle="tab" href="#config" role="tab" aria-controls="config" aria-selected="false">Konfigurera</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                <h1>Beställningar</h1>
+                {% if not orders %}
+                    Det finns inga beställningar än.
+                {% else %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kund</th>
+                                <th>Totalpris</th>
+                                <th>Betald</th>
+                                <th>Hämtad</th>
+                                <th>Hantera</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.customer }}</td>
+                                    <td>{{ order.price }} kr</td>
+                                    <td>
+                                        <h5>
+                                            {% if order.paid %}
+                                                <span class="badge badge-success">Ja</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Nej</span>
+                                            {% endif %}
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        <h5>
+                                            {% if order.delivered %}
+                                                <span class="badge badge-success">Ja</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Nej</span>
+                                            {% endif %}
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-info" href="order.php?id={{ order.id }}">Visa</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="products" role="tablpanel">
+                <h1>Produkter</h1>
+                {% if not products %}
+                    Det finns inga produkter än!
+                {% else %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th>Pris</th>
+                                <th>Antal beställningar</th>
+                                <th>Hantera</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.price }}</td>
+                                    <td>{{ product.num_orders }}</td>
+                                    <td>
+                                        <form action="admin.php" method="post">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="{{ product.id }}">
+                                            <button class="btn btn-danger" type="submit">Radera</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="create-product" role="tabpanel" aria-labelledby="create-product-tab">
+                <h1>Skapa produkt</h1>
+                <form action="admin.php" method="post">
+                    <input type="hidden" name="action" value="create">
+                    <div class="form-group">
+                        <label for="name">Namn</label>
+                        <input class="form-control" type="text" name="name" id="name" required autocomplete="off" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Pris</label>
+                        <input class="form-control" type="number" name="price" id="price" required autocomplete="off">
+                    </div>
+                    <button class="btn btn-secondary" type="submit">Skapa</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+                <h1>Konfigurera</h1>
+                <form action="admin.php" method="post">
+                    <input type="hidden" name="action" value="config">
+                    <div class="form-group">
+                        <label for="swish_number">Swish telefonnumer</label>
+                        <input class="form-control" type="text" name="swish_number" id="swish_number" value="{{ config.swish_number }}" autocomplete="off" autofocus>
+                    </div>
+                    <button class="btn btn-secondary" type="submit">Spara</button>
+                </form>
+            </div>
+        </div>
+
+{% endblock content %}

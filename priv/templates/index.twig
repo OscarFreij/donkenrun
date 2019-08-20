@@ -1,0 +1,95 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <div class="jumbotron ">
+        <h1>Lägg beställning</h1>
+        {% if not products %}
+            <div class="alert alert-danger">
+                Det finns inga produkter i systemet! ) :
+            </div>
+        {% else %}
+            <form action="order.php" method="post">
+                <div id="stage1">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Pris</th>
+                                <th>Kvantitet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.price }} kr</td>
+                                    <td>
+                                        <input class="form-control quantity" min="0" max="20" data-price="{{ product.price }}" type="number" name="products[{{ product.id }}]" id="product-{{ product.id }}" value="0">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group">
+                        <label for="name">För- och efternamn</label>
+                        <input class="form-control" type="text" name="name" id="name" placeholder="Ange namn" required>
+                    </div>
+                    <div class="btn btn-success" id="next">Nästa</div>
+                    <button class="btn btn-warning" type="reset">Återställ</button>
+                </div>
+                <div id="stage2">
+                    <p>
+                        <b>Pris:</b> <span id="total-price"></span> kr
+                        <div class="col-3" id="swish"></div>
+                    </p>
+                    <div class="form-check">
+                        <input type="checkbox" name="paid" id="paid">
+                        <label class="form-check-label" for="paid">Betalat</label>
+                    </div>
+                    
+                    <div class="form-group col-4">
+                        <label for="comment"></label>
+                        <textarea class="form-control" name="comment" id="comment" cols="30" rows="10" placeholder="Eventuell kommentar"></textarea>
+                    </div>
+                    <button class="btn btn-success" type="submit">Beställ</button>
+                    <button id="yeeter" class="btn btn-warning" type="reset">Återställ</button>
+                </div>
+            </form>
+        {% endif %}
+        <script>
+            $(document).ready(function() {
+                $(window).keydown(function(event){
+                    if(event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                    }
+                });
+                });
+            $('#stage2').hide()
+            $('#yeeter').click(function() {
+                $('#stage1').show()
+                $('#stage2').hide()
+            })
+            $('#next').click(function() {
+
+                var price = 0
+                $('.quantity').each(function() {
+                    if(this.value < 0 || this.value > 20) {
+                        return
+                    }
+                    price += this.value * this.getAttribute('data-price')
+                })
+                if(price > 0) {
+                    $('#total-price').text(price)
+                    fetch('qr.php?price=' + price + '&name=' + document.getElementById("name").value + '')
+                        .then(resp => resp.text())
+                        .then(text => {
+                            $('#swish').html(text)
+                        })
+                    $('#stage1').hide()
+                    $('#stage2').show()
+                }  
+            })
+        </script>
+    </div>
+{% endblock content %}
